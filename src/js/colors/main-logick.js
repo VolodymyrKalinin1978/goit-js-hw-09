@@ -1,4 +1,6 @@
 import refs from './refs';
+import {changeBackgroundColor} from '../01-color-switcher';
+
 
 export function startColorChange() {
   refs.startBtn.setAttribute('disabled', true);
@@ -11,3 +13,4 @@ export function stopColorChange() {
   refs.startBtn.removeAttribute('disabled');
   refs.stopBtn.setAttribute('disabled', true);
 }
+

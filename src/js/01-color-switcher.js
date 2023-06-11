@@ -1,5 +1,5 @@
 import refs from './colors/refs';
-import {startColorChange, stopColorChange} from './timer/main-logick';
+import {startColorChange, stopColorChange} from './colors/main-logick';
 import {getRandomHexColor} from './colors/random-colorHex';
 let intervalId = null;
 
