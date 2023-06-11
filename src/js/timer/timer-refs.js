@@ -1,9 +1,4 @@
-const timerRef = {
-  days: document.querySelector('[data-days]'),
-  hours: document.querySelector('[data-hours]'),
-  minutes: document.querySelector('[data-minutes]'),
-  seconds: document.querySelector('[data-seconds]'),
-  inputBtn: document.querySelector('[data-start]'),
+export const timerRef = {
   inputVelue: document.querySelector('#datetime-picker'),
   timerElement: document.querySelector('.timer'),
   fieldElements: document.querySelectorAll('.field'),
@@ -11,4 +6,11 @@ const timerRef = {
   labelElements: document.querySelectorAll('.label'),
 };
 
-export default timerRef;
+export const ref = {
+  btnTimerStart: document.querySelector('[data-start]'),
+  timerFieldDays: document.querySelector('[data-days]'),
+  timerFielHours: document.querySelector('[data-hours]'),
+  timerFieldMinutes: document.querySelector('[data-minutes]'),
+  timerFieldSeconds: document.querySelector('[data-seconds]'),
+};
+

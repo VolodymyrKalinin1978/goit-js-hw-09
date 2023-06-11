@@ -1,43 +1,75 @@
-import timerRef from './timer/timer-refs';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
-import Notiflix from 'notiflix';
-import { options } from './timer/flatpicer-mod';
-import updateTimerUI from './timer/updateTimerUI-mod';
-import convertMs from './timer/convertMs-mod';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import timerStyles from './timer/timerStyles-mod';
+import { timerRef, ref } from './timer/timer-refs';
 
-timerRef.inputBtn.disabled = true;
-flatpickr('#datetime-picker', options);
+ref.btnTimerStart.disabled = true;
+let timerId = null;
 
-let countdownIntervalId = null;
+const options = {
+  enableTime: true,
+  time_24hr: true,
+  defaultDate: new Date(),
+  minuteIncrement: 1,
 
-function startCountdown() {
-  const selectedDate = flatpickr.parseDate(timerRef.inputVelue.value);
-  const currentDate = new Date();
+  onClose(selectedDates) {
+    const currentDate = new Date();
 
-  if (selectedDate <= currentDate) {
-    Notiflix.Notify.failure('Please choose a date in the future');
-    return;
-  }
+    if (selectedDates[0] - currentDate > 0) {
+      ref.btnTimerStart.disabled = false;
+    } else {
+      ref.btnTimerStart.disabled = true;
+      Notify.failure('Please choose a date in the future', {
+        timeout: 1500,
+        width: '400px',
+      });
+    }
+  },
+};
 
-  clearInterval(countdownIntervalId);
+function convertMs(ms) {
+  const second = 1000;
+  const minute = second * 60;
+  const hour = minute * 60;
+  const day = hour * 24;
 
-  countdownIntervalId = setInterval(() => {
-    const remainingTime = selectedDate.getTime() - new Date().getTime();
-    console.log(new Date());
-    if (remainingTime <= 0) {
-      clearInterval(countdownIntervalId);
-      updateTimerUI(0);
-      Notiflix.Notify.success('Countdown finished!');
+  const days = Math.floor(ms / day);
+  const hours = Math.floor((ms % day) / hour);
+  const minutes = Math.floor(((ms % day) % hour) / minute);
+  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
+
+  return { days, hours, minutes, seconds };
+}
+
+function addLeadingZero(value) {
+  return String(value).padStart(2, 0);
+}
+
+function onTimerStart() {
+  const selectedDate = fp.selectedDates[0];
+
+  timerId = setInterval(() => {
+    const startTime = new Date();
+    const countdown = selectedDate - startTime;
+    ref.btnTimerStart.disabled = true;
+
+    if (countdown < 0) {
+      clearInterval(timerId);
       return;
     }
-
-    const { days, hours, minutes, seconds } = convertMs(remainingTime);
-    updateTimerUI(days, hours, minutes, seconds);
+    updateTimerFace(convertMs(countdown));
   }, 1000);
-  timerRef.inputBtn.disabled = true;
 }
+
+function updateTimerFace({ days, hours, minutes, seconds }) {
+  ref.timerFieldDays.textContent = addLeadingZero(days);
+  ref.timerFielHours.textContent = addLeadingZero(hours);
+  ref.timerFieldMinutes.textContent = addLeadingZero(minutes);
+  ref.timerFieldSeconds.textContent = addLeadingZero(seconds);
+}
+
+const fp = flatpickr('#datetime-picker', options);
 
 Object.assign(timerRef.timerElement.style, timerStyles.timer);
 
@@ -53,4 +85,4 @@ timerRef.labelElements.forEach(label =>
   Object.assign(label.style, timerStyles.label)
 );
 
-timerRef.inputBtn.addEventListener('click', startCountdown);
+ref.btnTimerStart.addEventListener('click', onTimerStart);
