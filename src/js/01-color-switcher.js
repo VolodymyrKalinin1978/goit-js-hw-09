@@ -1,24 +1,33 @@
-import refs from './colors/refs';
-import {startColorChange, stopColorChange} from './colors/main-logick';
-import {getRandomHexColor} from './colors/random-colorHex';
+const startBtn = document.querySelector('[data-start]');
+const stopBtn = document.querySelector('[data-stop]');
+
 let intervalId = null;
 
-refs.startBtn.addEventListener('click', startColorChange);
-refs.stopBtn.addEventListener('click', stopColorChange);
+startBtn.addEventListener('click', startColorChange);
+stopBtn.addEventListener('click', stopColorChange);
 
-
-
-export const changeBackgroundColor = () =>{
-  const randomColor = getRandomHexColor();
- 
-  refs.bodyStyles.style.background = `linear-gradient(to bottom, ${randomColor}, #fff)`;
-  refs.bodyStyles.style.backgroundRepeat = 'no-repeat';
-  refs.bodyStyles.style.backgroundSize = '100% 100%';
-  document.documentElement.style.height = '100%';
-  
+function startColorChange() {
+  startBtn.setAttribute('disabled', true);
+  stopBtn.removeAttribute('disabled');
+  intervalId = setInterval(changeBackgroundColor, 1000);
 }
 
+function stopColorChange() {
+  clearInterval(intervalId);
+  startBtn.removeAttribute('disabled');
+  stopBtn.setAttribute('disabled', true);
+}
 
+function changeBackgroundColor() {
+  const randomColor = getRandomHexColor();
+  document.body.style.backgroundColor = randomColor;
+}
 
-
-
+function getRandomHexColor() {
+  const hexLetters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += hexLetters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
